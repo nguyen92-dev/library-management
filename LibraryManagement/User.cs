@@ -1,7 +1,6 @@
 ﻿namespace LibraryManagement;
 
-public class User
+public class User : Base
 {
-    public int UserId { get; set; }
     public required string Name { get; set; }
 }

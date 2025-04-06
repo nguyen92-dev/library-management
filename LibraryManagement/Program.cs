@@ -20,6 +20,7 @@ class Program
                 Console.WriteLine("5. Tìm Sách Theo Tác Giả");
                 Console.WriteLine("6. Xoá Sách Theo Id");
                 Console.WriteLine("7. Xoá Người Dùng Theo Id");
+                Console.WriteLine("8. Xoá Tất Cả Sách");
                 Console.WriteLine("0. Thoát");
                 Console.Write("Chọn một tùy chọn: ");
                 string choice = Console.ReadLine();
@@ -47,6 +48,9 @@ class Program
                     case "7":
                         DeleteUsersById();
                         break;
+                    case "8":
+                        DeleteAllBooks();
+                        break;
                     case "0":
                         return;
                     default:
@@ -61,11 +65,17 @@ class Program
         }        
     }
 
+    private static void DeleteAllBooks()
+    {
+        books.RemoveAll(b => true);
+        Console.WriteLine("Đã xóa tất cả sách.");
+    }
+
     private static void DeleteBooksById()
     {
         Console.WriteLine("Nhập mã sách cần xóa: ");
         var id = HandleIntInput("ID không hợp lệ.");
-        var bookToDelete = books.FirstOrDefault(book => book.BookId == id);
+        var bookToDelete = books.FirstOrDefault(book => book.Id == id);
         if (bookToDelete != null)
         {
             books.Remove(bookToDelete);
@@ -81,7 +91,7 @@ class Program
     {
         Console.WriteLine("Nhập mã người dùng cần xóa: ");
         var id = HandleIntInput("ID không hợp lệ.");
-        var userToDelete = users.FirstOrDefault(user => user.UserId == id);
+        var userToDelete = users.FirstOrDefault(user => user.Id == id);
         if (userToDelete != null)
         {
             users.Remove(userToDelete);
@@ -104,7 +114,7 @@ class Program
             return;
         }
         foundBooks.ForEach(
-            book => Console.WriteLine($"Mã: {book.BookId}, " +
+            book => Console.WriteLine($"Mã: {book.Id}, " +
                                       $"Tên: {book.Title}, " +
                                       $"Tác Giả: {book.Author}, " +
                                       $"Năm: {book.PublicationYear}"));
@@ -128,7 +138,7 @@ class Program
             return;
         }
         books.ForEach(book =>  
-            Console.WriteLine($"Mã: {book.BookId}, " +
+            Console.WriteLine($"Mã: {book.Id}, " +
                               $"Tên: {book.Title}, " +
                               $"Tác Giả: {book.Author}, " +
                               $"Năm: {book.PublicationYear}"));
@@ -137,12 +147,12 @@ class Program
     private static void AddUser()
     {
         Console.WriteLine("Nhập ID Người Dùng: ");
-        var id = HandleIntInput("ID không hợp lệ.");
+        var id = HandleUniqueIdInput(users);
         Console.WriteLine("Nhập Tên Người Dùng: ");
         var name = HandleRequiredStringInput("Tên người dùng");
         var user = new User
         {
-            UserId = id,
+            Id = id,
             Name = name
         };
         users.Add(user);
@@ -152,7 +162,7 @@ class Program
     private static void AddBook()
     {
         Console.Write("Nhập Mã Sách: ");
-        var id = HandleIntInput("Mã sách không hợp lệ.");
+        var id = HandleUniqueIdInput(books);
         Console.Write("Nhập Tên Sách: ");
         var title = HandleRequiredStringInput("Tên sách");
         Console.Write("Nhập Tác Giả: ");
@@ -162,7 +172,7 @@ class Program
         
         var book = new Book
         {
-            BookId = id,
+            Id = id,
             Title = title,
             Author = author,
             PublicationYear = year
@@ -177,7 +187,7 @@ class Program
         var input = Console.ReadLine();
         while (!int.TryParse(input, out result))
         {
-            Console.WriteLine("${message} Vui lòng nhập lại: ");
+            Console.WriteLine($"{message} Vui lòng nhập lại: ");
             input = Console.ReadLine();
         }
         return result;
@@ -197,5 +207,16 @@ class Program
     private static string HandleRequiredStringInput(string fieldName)
     {
         return HandleStringInput($"{fieldName} không được để trống. Vui lòng nhập lại: ");
+    }
+
+    private static int HandleUniqueIdInput<T>(List<T> list) where T : Base
+    {
+        var id = HandleIntInput("ID không hợp lệ.");
+        while (list.Any(@base => @base.Id == id))
+        {
+            Console.WriteLine("ID đã tồn tại. Vui lòng nhập lại: ");
+            id = HandleIntInput("ID không hợp lệ.");
+        }
+        return id;
     }
 }
