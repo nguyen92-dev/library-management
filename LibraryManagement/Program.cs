@@ -1,4 +1,6 @@
-﻿namespace LibraryManagement;
+﻿using LibraryManagement.Models;
+
+namespace LibraryManagement;
 
 class Program
 {

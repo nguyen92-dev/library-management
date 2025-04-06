@@ -1,4 +1,4 @@
-﻿namespace LibraryManagement;
+﻿namespace LibraryManagement.Models;
 
 public class User : Base
 {
