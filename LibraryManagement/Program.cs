@@ -2,8 +2,8 @@
 
 class Program
 {
-    static List<User> users = new List<User>();
-    static List<Book> books = new List<Book>();
+    static List<User> users = [];
+    static List<Book> books = [];
     
     static void Main(string[] args)
     {
@@ -63,26 +63,44 @@ class Program
 
     private static void DeleteBooksById()
     {
-        Console.WriteLine("Nhap ma sach can xoa: ");
-        int id = HandleIntInput("ID khong hop le. Vui long nhap lai: ");
-        books.RemoveAll(book => book.BookId == id);
+        Console.WriteLine("Nhập mã sách cần xóa: ");
+        var id = HandleIntInput("ID không hợp lệ.");
+        var bookToDelete = books.FirstOrDefault(book => book.BookId == id);
+        if (bookToDelete != null)
+        {
+            books.Remove(bookToDelete);
+            Console.WriteLine("Xoá sách thành công!");
+        }
+        else
+        {
+            Console.WriteLine("Không tìm thấy sách với ID này.");
+        }
     }
     
     private static void DeleteUsersById()
     {
-        Console.WriteLine("Nhap ma nguoi dung can xoa: ");
-        int id = HandleIntInput("ID khong hop le. Vui long nhap lai: ");
-        users.RemoveAll(user => user.UserId == id);
+        Console.WriteLine("Nhập mã người dùng cần xóa: ");
+        var id = HandleIntInput("ID không hợp lệ.");
+        var userToDelete = users.FirstOrDefault(user => user.UserId == id);
+        if (userToDelete != null)
+        {
+            users.Remove(userToDelete);
+            Console.WriteLine("Xoá người dùng thành công!");
+        }
+        else
+        {
+            Console.WriteLine("Không tìm thấy người dùng với ID này.");
+        }
     }
 
     private static void SearchBooksByAuthor()
     {
-        Console.WriteLine("Nhap ten tac gia: ");
-        var author = Console.ReadLine();
+        Console.WriteLine("Nhập tên tác giả: ");
+        var author = HandleRequiredStringInput("Tên tác giả");
         var foundBooks = books.Where(book => book.Author == author).ToList();
         if (foundBooks.Count() == 0)
         {
-            Console.WriteLine("Khong tim thay sach cua tac gia nay.");
+            Console.WriteLine("Không tìm thấy sách nào của tác giả này.");
             return;
         }
         foundBooks.ForEach(
@@ -96,7 +114,7 @@ class Program
     {
         if (users.Count == 0)
         {
-            Console.WriteLine("Khong co nguoi dung nao trong thu vien.");
+            Console.WriteLine("Không có người dùng nào trong hệ thống.");
             return;
         }
         users.ForEach(user => Console.WriteLine($"{user.Name}"));
@@ -106,7 +124,7 @@ class Program
     {
         if (books.Count == 0)
         {
-            Console.WriteLine("Khong co sach nao trong thu vien.");
+            Console.WriteLine("Không có sách nào trong thư viện.");
             return;
         }
         books.ForEach(book =>  
@@ -119,10 +137,10 @@ class Program
     private static void AddUser()
     {
         Console.WriteLine("Nhập ID Người Dùng: ");
-        int id = HandleIntInput("ID không hợp lệ. Vui lòng nhập lại: ");
+        var id = HandleIntInput("ID không hợp lệ.");
         Console.WriteLine("Nhập Tên Người Dùng: ");
-        string? name = Console.ReadLine();
-        User user = new User
+        var name = HandleRequiredStringInput("Tên người dùng");
+        var user = new User
         {
             UserId = id,
             Name = name
@@ -134,15 +152,15 @@ class Program
     private static void AddBook()
     {
         Console.Write("Nhập Mã Sách: ");
-        int id = HandleIntInput("Mã sách không hợp lệ. Vui lòng nhập lại: ");
+        var id = HandleIntInput("Mã sách không hợp lệ.");
         Console.Write("Nhập Tên Sách: ");
-        string? title = Console.ReadLine();
+        var title = HandleRequiredStringInput("Tên sách");
         Console.Write("Nhập Tác Giả: ");
-        string? author = Console.ReadLine();
+        var author = HandleRequiredStringInput("Tác giả");
         Console.Write("Nhập Năm Xuất Bản: ");
-        int year = HandleIntInput("Năm xuất bản không hợp lệ. Vui lòng nhập lại: ");
+        var year = HandleIntInput("Năm xuất bản không hợp lệ.");
         
-        Book book = new Book
+        var book = new Book
         {
             BookId = id,
             Title = title,
@@ -153,15 +171,31 @@ class Program
         Console.WriteLine("Thêm sách thành công!");
     }
     
-    public static int HandleIntInput(string message)
+    private static int HandleIntInput(string message)
     {
         int result;
         var input = Console.ReadLine();
         while (!int.TryParse(input, out result))
         {
-            Console.WriteLine(message);
+            Console.WriteLine("${message} Vui lòng nhập lại: ");
             input = Console.ReadLine();
         }
         return result;
+    }
+    
+    private static string HandleStringInput(string message)
+    {
+        var input = Console.ReadLine();
+        while (string.IsNullOrEmpty(input))
+        {
+            Console.WriteLine(message);
+            input = Console.ReadLine();
+        }
+        return input;
+    }
+    
+    private static string HandleRequiredStringInput(string fieldName)
+    {
+        return HandleStringInput($"{fieldName} không được để trống. Vui lòng nhập lại: ");
     }
 }
