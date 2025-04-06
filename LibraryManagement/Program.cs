@@ -109,7 +109,7 @@ class Program
     {
         Console.WriteLine("Nhập tên tác giả: ");
         var author = HandleRequiredStringInput("Tên tác giả");
-        var foundBooks = books.Where(book => book.Author.ToLower().Equals(author.ToLower())).ToList();
+        var foundBooks = books.Where(book => book.Author.Equals(author, StringComparison.OrdinalIgnoreCase)).ToList();
         if (foundBooks.Count() == 0)
         {
             Console.WriteLine("Không tìm thấy sách nào của tác giả này.");
